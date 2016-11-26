@@ -8,10 +8,10 @@ The defense can operate in a probabilistic (P-ALPaCA) or
 a deterministic (D-ALPaCA) mode.
 
 ## P-ALPaCa
-Morphing a page \$PAGE.
-The morphed page is put into directory \$DST.
+Morphing a page $PAGE.
+The morphed page is put into directory $DST.
 The following assumes you have generated the KDE distributions,
-and loaded them into \$DISTD.
+and loaded them into $DISTD.
 
 
     export PAGE=                  # .html file to morph.
@@ -22,8 +22,8 @@ and loaded them into \$DISTD.
     
 
 ## D-ALPaCa
-Morphing a page \$PAGE.
-The morphed page is put into directory \$DST.
+Morphing a page $PAGE.
+The morphed page is put into directory $DST.
 
     export L=       # Parameter "lambda".
     export S=       # Parameter "sigma"
