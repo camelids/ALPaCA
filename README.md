@@ -16,7 +16,7 @@ and loaded them into $DISTD.
 
     export PAGE=                  # .html file to morph.
     export DST=                   # destination directory for the morphed page.
-    export DISTD=distributions    # Folder containing the KDE distributions.
+    export DISTD=                 # Folder containing the KDE distributions.
     
     python ssd.py --page $PAGE --dst $DST distribution --distribution-type kde --count-dist $DISTD/counts.kde --html-dist $DISTD/html.kde --objects-dist $DISTD/objects.kde
     
