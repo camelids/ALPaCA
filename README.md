@@ -7,12 +7,15 @@ proposed in ''Website Fingerprinting Defenses at the Application Layer''
 The defense can operate in a probabilistic (P-ALPaCA) or
 a deterministic (D-ALPaCA) mode.
 
+## Requirements
+Coming soon.
+
 ## P-ALPaCa
 Morphing a page $PAGE.
 The morphed page is put into directory $DST.
 The following assumes you have generated the KDE distributions,
-and loaded them into $DISTD.
-
+and put them into directory $DISTD.
+You can find the distributions we used for experiments in ``data/distributions/``.
 
     export PAGE=                  # .html file to morph.
     export DST=                   # destination directory for the morphed page.
@@ -30,3 +33,6 @@ The morphed page is put into directory $DST.
     export MAXS=    # Parameter "max_s"
     
     python ssd.py --page $PAGE --dst $DST deterministic --L $L --S $S --maxs $MAXS
+
+## Generating custom distributions for P-ALPaCA
+Coming soon.
