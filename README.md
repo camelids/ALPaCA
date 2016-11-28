@@ -8,7 +8,7 @@ The defense can operate in a probabilistic (P-ALPaCA) or
 a deterministic (D-ALPaCA) mode.
 
 _Note: this is a research prototype. Please, do not use this code
-to defend your website as yet, as both code and ideas need peer-reviewing.
+to defend your website as yet, as it needs peer-reviewing.
 We will remove this disclaimer when appropriate._
 
 ## Requirements
