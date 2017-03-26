@@ -123,9 +123,9 @@ def morph_page_deterministic(fname, S, L, max_S, outdir):
         target_html_size += S
         morph_page(original, target_html_size, target_sizes, outdir)
 
-def morph_page(original, target_html_size, target_sizes, outdir):
-    """Morph original page to look like a target, and put
-    the morphed content in outdir directory.
+def morph_page(original, target_html_size, target_sizes):
+    """Morph original page to look like a target, and returns
+    the morphed content as a string.
     
     Parameters
     ----------
@@ -135,51 +135,40 @@ def morph_page(original, target_html_size, target_sizes, outdir):
         Size of the HTML file of the target page.
     target_sizes : list of int
         Sizes of the objects of the target page.
-    outdir : string
-        Output directory.
     """
     # Which object should be morphed with what.
     original_sizes = original.get_sizes()
     pairs, remainders = match_sizes(original_sizes, target_sizes)
 
+    new_html = original.content
+
     # Morph objects.
     original_objects = original.objects
     for i, size in pairs:
-        src = original_objects[i]['fullpath']
-        src_relative = original_objects[i]['path']
-        print 'Morphing {} to size {}.'.format(src_relative, size)
-        dst = os.path.join(outdir, src_relative)
-        make_path(dst)
-        #print 'Full: {}, relative: {}'.format(src, src_relative)
-        morph_object(src, dst, size)
+        obj_path = original_objects[i]['path']
+        obj_type = original_objects[i]['type']
+        new_path = '{}?type={}&size={}'.format(obj_path, obj_type, size)
+        new_html = new_html.replace(obj_path, new_path)
 
     # Add padding objects.
-    add_to_html = ''
+    add_to_html = []
     for i, size in enumerate(remainders):
-        dst = os.path.join(outdir, 'random-objects', 'rnd-{}.png'.format(i))
-        dst_relative = os.path.join('random-objects', 'rnd-{}.png'.format(i))
-        print 'Adding {} with size {}.'.format(dst, size)
-        make_path(dst)
-        create_object(dst, size)
-        add_to_html += '<img src="{}" style="visibility:hidden">'.format(dst_relative)
+        new_obj = '<img src="rnd?size={}" style="visibility:hidden">'.format(size)
+        add_to_html.append(new_obj)
+    add_to_html = ''.join(add_to_html)
 
     # Morph HTML page.
-    if original.html['size'] + len(add_to_html) > target_html_size:
+    if len(new_html) + len(add_to_html) > target_html_size:
         raise Exception('The size of the original page is larger than the target one.')
-    with open(original.fname) as f:
-        original_html = f.read()
     # Put add_to_html (links to padding images) right before the end of
     # <body>.
-    body = original_html.find('</body>')
+    body = new_html.find('</body>')
     if body == -1:
         raise Exception('Am I really looking at an HTML file?')
-    tmp = original_html[:body] + add_to_html + original_html[body:]
-    new_html = morph_html(tmp, target_html_size)
-    dst = os.path.join(outdir, file_name(original.fname))
-    print 'Morphing {} to size {}.'.format(dst, target_html_size)
-    make_path(dst)
-    with open(dst, 'w') as f:
-        f.write(new_html)
+    new_html = new_html[:body] + add_to_html + new_html[body:]
+    new_html = morph_html(new_html, target_html_size)
+
+    return new_html
 
 def match_sizes(original_sizes, target_sizes):
     """Decide which original size should be paded with which
