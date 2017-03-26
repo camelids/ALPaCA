@@ -3,17 +3,17 @@ from file_utils import *
 
 class Page:
     
-    def __init__(self, page):
-        """Instantiate a Page object, given the file name
-        of an HTML page.
+    def __init__(self, html_string):
+        """Instantiate a Page object, given the contents of an HTML
+        page as a string.
         
         Parameters
         ----------
-        page : string
-            File name of HTML page.
+        html_string : string
+            The content of an HTML page.
         """
-        self.page = page
-        self.objects = self.parse_objects(page)
+        self.content = html_string
+        self.objects = self.parse_objects(html_string)
 
     def get_sizes(self):
         """Return the size of the objects.
