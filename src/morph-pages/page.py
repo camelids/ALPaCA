@@ -12,12 +12,8 @@ class Page:
         page : string
             File name of HTML page.
         """
-        self.fname = page
-        self.basedir = dir_name(page)
-        relpath = file_name(page)
-        self.html = self.new_object(relpath, 'html')
-        with open(page) as f:
-            self.objects = self.parse_objects(f.read())
+        self.page = page
+        self.objects = self.parse_objects(page)
 
     def get_sizes(self):
         """Return the size of the objects.
@@ -52,7 +48,7 @@ class Page:
 
     def new_object(self, path, ftype=None, delay=0):
         
-        fullpath = os.path.join(self.basedir, path)
+        fullpath = os.path.join('.', path)
         size = file_size(fullpath)
         if not ftype:
             ftype = file_extension(path)
