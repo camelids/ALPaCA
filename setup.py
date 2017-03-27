@@ -11,6 +11,6 @@ setup(name='ALPaCA',
       description='A server-side website fingerprinting defense',
       author='camelids',
       url='https://github.com/camelids/ALPaCA/tree/strings',
-      packages=['alpaca'],
+      packages=['alpaca', 'alpaca.dists'],
       install_requires=reqs,
      )
