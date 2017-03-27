@@ -1,0 +1,13 @@
+appdirs==1.4.3
+beautifulsoup4==4.5.3
+bs4==0.0.1
+munkres==1.0.8
+numpy==1.12.1
+olefile==0.44
+packaging==16.8
+Pillow==4.0.0
+pkg-resources==0.0.0
+scikit-learn==0.18.1
+scipy==0.19.0
+six==1.10.0
+sklearn==0.0
