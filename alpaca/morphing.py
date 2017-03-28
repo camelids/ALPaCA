@@ -9,21 +9,30 @@ import numpy as np
 from file_utils import *
 from morph_utils import create_object, morph_html, morph_object
 
-def morph_page_distribution(fname, page_sampler, outdir):
-    """Morph original page to look as it comes from the
+MAX_FAILS = 20    # How many times we should sample a target page from a
+                  # distribution and fail, before raising an error
+
+
+class InvalidTarget(Exception):
+    """Raised when the original page cannot be morphed to the provided
+    target.
+    """
+    pass
+
+
+def morph_page_distribution(html, page_sampler):
+    """Morph an html page to look as it comes from the
     specified distribution.
 
     Parameters
     ----------
-    fname : str
-        File name of the HTML file of the original page.
+    html : str
+        Original HTML page.
     page_sampler : sampling.PageSampler
         Page sampler.
-    outdir : str
-        Destination directory.
     """
-    original = page.Page(fname)
-    html_size = original.html['size']
+    original = page.Page(html)
+    html_size = len(original.content)
     sizes = original.get_sizes()
     number = len(sizes)                 # Number of objects.
 
@@ -32,17 +41,32 @@ def morph_page_distribution(fname, page_sampler, outdir):
     else:
         min_objs = min(sizes)
 
-    target_html_size, target_sizes = page_sampler.sample_page(min_count = number,
-                                                              min_html = html_size,
-                                                              min_objs = min_objs)
-                                                            
-    # Try to morph. If it doesn't work (some sizes where too
+    # NOTE: one could preemptively sample from the distribution,
+    # and modify morph_page_distribution() to accept such sampled data
+
+    # Try to morph. If it doesn't succeed (some sizes where too
     # small), notify and try again.
-    try:
-        morph_page(original, target_html_size, target_sizes, outdir)
-    except:
-        print "Couldn't morph {} with {}".format(sizes, target_sizes)
-        morph_page_distribution(fname, page_sampler, outdir)
+    # Does not report failure for MAX_FAILS tries
+    morphed = None
+    fail_count = 0
+    while fail_count < MAX_FAILS:
+        target = page_sampler.sample_page(min_count = number, 
+                                          min_html = html_size,
+                                          min_objs = min_objs)
+        try:
+            morphed = morph_page(original, *target)
+            break
+        except InvalidTarget:
+            # TODO: verbose logging
+            print("Couldn't morph {} with {}".format((html_size, sizes),
+                                                     *target))
+            fail_count += 1
+
+    # If too many failures in morphing
+    if morphed is None:
+        raise InvalidTarget('Original page > Target page. Try changing distributions')
+
+    return morphed
 
 def morph_page_target(fname, target_html_size, target_sizes, outdir):
     """Morph original page to look like a target, and put
@@ -119,13 +143,14 @@ def morph_page_deterministic(fname, S, L, max_S, outdir):
         # close. This means that when adding stuff to the mophed html page
         # (e.g., image references) the page may become bigger than target_html_size,
         # which makes morphing fail.
-        print "Couldn't morph {} with {}".format(original_html_size, target_html_size)
+        print("Couldn't morph {} with {}".format(original_html_size,
+                                                 target_html_size))
         target_html_size += S
         morph_page(original, target_html_size, target_sizes, outdir)
 
 def morph_page(original, target_html_size, target_sizes):
-    """Morph original page to look like a target, and returns
-    the morphed content as a string.
+    """Morph original page to look like a target (html and object sizes),
+    and returns the morphed content as a string.
     
     Parameters
     ----------
@@ -159,7 +184,8 @@ def morph_page(original, target_html_size, target_sizes):
 
     # Morph HTML page.
     if len(new_html) + len(add_to_html) > target_html_size:
-        raise Exception('The size of the original page is larger than the target one.')
+            raise InvalidTarget('Original page > Target page.')
+
     # Put add_to_html (links to padding images) right before the end of
     # <body>.
     body = new_html.find('</body>')
@@ -198,6 +224,6 @@ def match_sizes(original_sizes, target_sizes):
                ts = ts[j+1:]
                break
         else:
-            raise Exception('Original page > Target page.')
+            raise InvalidTarget('Original page > Target page.')
 
     return pairs, remainders
