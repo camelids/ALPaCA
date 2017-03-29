@@ -4,10 +4,12 @@ Functions of this script can be used to morph objects
 of web pages (e.g.: text, images).
 """
 import os
-import page
 import random
 import string
+
 from PIL import Image
+
+import page
 from file_utils import *
 
 def morph_html(html, target_size):
