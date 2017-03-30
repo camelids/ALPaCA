@@ -7,8 +7,6 @@ import os
 import random
 import string
 
-from PIL import Image
-
 import page
 from file_utils import *
 
@@ -27,55 +25,50 @@ def morph_html(html, target_size):
     """
     return __pad_html(html, target_size)
 
-def morph_object(fname, target_size):
-    """Morphs an object.
-
-    Accepts an object filepath, reads it into memory, and pads it to a
-    target_size. Returns the new object as a string or bytes.
+def morph_object(content, ftype, target_size):
+    """Pads the content of an object to the specified size.
 
     Parameters
     ----------
-    fname : str
+    content : str
+        Object content.
+    ftype : str
+        The object extension (e.g., 'png', 'jpg', ...).
     target_size : int
-        Size (in bytes) that the image should have.
+        Size (in bytes) that the object should have.
     """
-    ext = file_extension(fname)
-    if ext == 'png':
-        morph = __pad_jpeg
-    elif ext == 'jpg':
-        morph = __pad_jpeg
-    elif ext == 'bmp':
-        morph = __pad_bmp
-    elif ext == 'gif':
-        morph = __pad_gif
-    elif ext == 'tiff':
-        morph = __pad_tiff
-    elif ext == 'pdf':
-        morph = __pad_pdf
-    elif ext == 'css':
-        morph = __pad_css
-    else:
-        raise NotImplementedError('Morphing files with extension {}'.format(ext))
+    ftype = ftype.lower()
+    switch = {'png': __pad_binary,
+              'jpg': __pad_binary,
+              'jpeg': __pad_binary,
+              'gif': __pad_binary,
+              'bmp': __pad_binary,
+              'css': __pad_css,
+              'default': __pad_binary
+             }
     
-    return morph(fname, target_size)
+    if ftype in switch:
+        morph = switch[ftype]
+    else:
+        print("Morphing file with type '{}' (this may not work)".format(ftype))
+        morph = switch['default']
+    
+    return morph(content, target_size)
 
-def create_object(fname, size):
-    """Creates a binary file with random data.
+def create_object(size):
+    """Creates a binary object with random data.
     
     The file can be given any extension.
 
     Parameters
     ----------
-    fname : str
-        Name of the file.
     size : int
-        Size in bytes of the file.
+        Size in bytes of the object.
     """
     if size <= 0:
         raise FilePaddingError('New file')
-    with open(fname, 'wb') as f:
-        rnd = random_bytes(size)
-        f.write(rnd)
+    
+    return random_bytes(size)
 
 def random_chars(n):
     """Returns a string of random characters in [a-zA-Z0-9].
@@ -119,149 +112,46 @@ def __split_html(html, target_size):
     """
     raise NotImplementedError('Splitting HTML files.')
 
-def __pad_css(fname, target_size):
-    """Pads a CSS file.
+def __pad_css(content, target_size):
+    """Pads a CSS file content.
     
-    Adds a comment at the end of the CSS file, and
-    stores the result in a new file.
+    Adds a comment at the end of the CSS.
     
     Parameters
     ----------
-    fname : string
-        CSS file name.
-    target : int
+    content : string
+        CSS file content
+    target_size : int
         Size (in bytes) that the file should have.
-        """
-    with open(fname) as f:
-        text = f.read()
+    """
+    size = len(content)
+    if size == target_size:
+        return content
 
-    if len(text) == target_size:
-        return text
-
-    # Padding size
+    # Determine padding size
     comment_start = '/*'
     comment_end = '*/'
     pad = target_size - size - len(comment_start) - len(comment_end)
     if pad < 0:
-        raise FilePaddingError(fname)
+        raise FilePaddingError('CSS file')
+
     # Pad
     rnd = random_chars(pad) 
-    text += '{}{}{}'.format(comment_start, rnd, comment_end)
-    return text
+    morphed = '{}{}{}{}'.format(content, comment_start, rnd, comment_end)
 
-def __pad_png(fname, target_size):
-    """Pad a PNG image.
-
-    Adds random content to the comment section
-    of a PNG image so that it gets the required
-    target size.
+    return morphed
     
+def __pad_binary(content, target_size):
+    """Pad the (binary) content of an object to target size.
+
     Parameters
     ----------
-    fname : str
-        Name of the image file.
+    content : str
+        Object content.
     target_size : int
-        Desired size.
-    """ 
-    raise NotImplementedError('Morphing PNG files')
-    # if file_size(fname) == target_size:
-    #     copy_file(fname, dst)
-    #     return
-    # # Store tmp image, get its size.
-    # # We do this to know the size of the image
-    # # when compressed using PIL library. Another option is to
-    # # force PIL to use the same compression method which was
-    # # used in the original image.
-    # img = Image.open(fname)
-    # tmpfname = fname + '-tmp.png'
-    # # We want 'Comment' section to appear in the
-    # # file. Otherwise, we'll have discrepancies in the
-    # # size we obtain at the end.
-    # if not 'Comment' in img.info:
-    #     img.info['Comment'] = ''
-    # save_png(img, tmpfname)
-    # pad = target_size - file_size(tmpfname)
-    # remove_file(tmpfname)
-    # if pad < 0:
-    #     raise FilePaddingError(fname)
-    # img = Image.open(fname)
-    # rnd = random_bytes(pad)
-    # if not 'Comment' in img.info:
-    #     img.info['Comment'] = ''
-    # img.info['Comment'] += rnd
-    # save_png(img, dst)
-
-def __pad_jpeg(fname, target_size):
-    """Pad a jpeg image.
-
-    Adds random data to a jpeg image so that it
-    takes the required target size.
-    
-    Parameters
-    ----------
-    fname : str
-        Name of the image file.
-    target_size : int
-        Desired size.
+        Target size in bytes.
     """
-    with open(fname, 'rb') as f:
-        img = f.read()
-    pad = target_size - len(img)
-    if pad < 0:
-        raise FilePaddingError(fname)
-    rnd = random_bytes(pad)
-    img += rnd
-    return img
+    if len(content) > target_size:
+        raise FilePaddingError("target_size too small")
 
-def __pad_bmp(img, target_size):
-    """Pad a BMP image.
-
-    Adds random data to a jpeg image so that it
-    takes the required target size.
-    
-    Parameters
-    ----------
-    fname : str
-        Name of the image file.
-    target_size : int
-        Desired size.
-    """
-    # Same procedure as JPEG.
-    __pad_jpeg(img, target_size)
-
-def __pad_gif(img, target_size):
-    """Pad a GIF image.
-    
-    Parameters
-    ----------
-    fname : str
-        Name of the image file.
-    target_size : int
-        Desired size.
-    """
-    # Same procedure as JPEG.
-    __pad_jpeg(img, target_size)
-
-def __pad_tiff(img, target_size):
-    """Pad a TIFF image.
-    
-    Parameters
-    ----------
-    fname : str
-        Name of the image file.
-    target_size : int
-        Desired size.
-    """
-    raise NotImplementedError('Morphing TIFF files')
-
-def __pad_pdf(img, target_size):
-    """Pad a PDF file.
-    
-    Parameters
-    ----------
-    fname : str
-        Name of the image file.
-    target_size : int
-        Desired size.
-    """
-    raise NotImplementedError('Morphing PDF files')
+    return content + random_bytes(target_size - len(content))
