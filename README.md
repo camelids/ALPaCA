@@ -25,13 +25,14 @@ content handler (e.g., Flask).
 
 Imports and init sampler (we recommend caching sampler to avoid further
 overheads).
+    
     from alpaca import sampling, morph_utils, morphing, dists
     
     sampler = sampling.KDEIndividual(dists.counts, dists.html, dists.objects)
 
 Morph an HTML page, get the result as a string.
-The resulting page contains links to the original objects with the
-specification of the size to what they should be padded and of their type
+The resulting page contains links to the original objects with
+specification of the size to which they should be padded and of their type
 (e.g., "/original-object.png?type=png&size=100").
 Furthermore, it may contain links to additional ("padding") objects
 (e.g., "/rnd?size=100").
@@ -41,12 +42,14 @@ Furthermore, it may contain links to additional ("padding") objects
 
 Pad an object (accepted as a (possibly binary) string) to the desired
 size, and get the result as a string.
+    
     content = "" # Object content
-    otype = "" # Object type (e.g., css, png, ...)
+    otype = "" # Object type (e.g., "css", "png", ...)
     size = 0 # Target size
     morphed = morph_utils.morph_object(content, otype, 100)
     
 Create a padding object of some target size.
+    
     size = 0 # Target size
     morphed = morph_utils.create_object(size)
 
