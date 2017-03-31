@@ -56,7 +56,7 @@ class Page:
         return objects
 
     def new_object(self, path, ftype=None, delay=0):
-        fullpath = abspath(realpath('.' + path))
+        fullpath = abspath(realpath('.' + path.split('?')[0]))
         size = file_size(fullpath)
         if not ftype:
             ftype = file_extension(fullpath)
