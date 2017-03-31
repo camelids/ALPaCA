@@ -44,6 +44,7 @@ def morph_object(content, ftype, target_size):
               'gif': __pad_binary,
               'bmp': __pad_binary,
               'css': __pad_css,
+              'js': __pad_css,
               'default': __pad_binary
              }
     
@@ -141,7 +142,8 @@ def __pad_css(content, target_size):
     morphed = '{}{}{}{}'.format(content, comment_start, rnd, comment_end)
 
     return morphed
-    
+
+
 def __pad_binary(content, target_size):
     """Pad the (binary) content of an object to target size.
 

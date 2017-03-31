@@ -33,9 +33,9 @@ class Page:
             HTML page.
         """
         soup = BeautifulSoup(html, 'html.parser')
+        objects = []
         # Images
         links = soup.find_all('img', src=True)
-        objects = []
         for img in links:
             path = img['src']
             obj = self.new_object(path)
@@ -46,7 +46,13 @@ class Page:
             path = css['href']
             obj = self.new_object(path)
             objects.append(obj)
-
+        # JS
+        links = soup.find_all('script', src=True)
+        for script in links:
+            path = script['src']
+            obj = self.new_object(path)
+            objects.append(obj)
+        
         return objects
 
     def new_object(self, path, ftype=None, delay=0):
