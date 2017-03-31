@@ -78,12 +78,13 @@ def random_chars(n):
     return ''.join([random.choice(chars) for i in range(n)])
 
 def random_bytes(n):
-    """Return a string of n random bytes suitable for cryptographic use.
-
-    This function returns random bytes from an OS-specific randomness source.
-    This is a wrapper around os.urandom() function.
+    """Return a string of n random bytes. This is not suitable for
+    cryptographic use, but preserves the /dev/urandom entropy pool which
+    we rely on for actually important cryptographic operations. Our goal
+    is to avoid our padding being compressed, for which
+    non-cryptographic randomness is sufficient.
     """
-    return os.urandom(n)
+    return str(bytearray(random.getrandbits(8) for _ in xrange(n)))
 
 def __pad_html(html, target_size):
     """Pads html text.
