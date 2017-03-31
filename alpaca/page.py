@@ -1,4 +1,7 @@
+from os.path import abspath, realpath
+
 from bs4 import BeautifulSoup
+
 from file_utils import *
 
 class Page:
@@ -47,11 +50,10 @@ class Page:
         return objects
 
     def new_object(self, path, ftype=None, delay=0):
-        
-        fullpath = os.path.join('.', path)
+        fullpath = abspath(realpath('.' + path))
         size = file_size(fullpath)
         if not ftype:
-            ftype = file_extension(path)
+            ftype = file_extension(fullpath)
         
         return {'path': path,
                 'fullpath': fullpath,
