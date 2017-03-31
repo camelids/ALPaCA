@@ -178,7 +178,7 @@ def morph_page(original, target_html_size, target_sizes):
     # Add padding objects.
     add_to_html = []
     for i, size in enumerate(remainders):
-        new_obj = '<img src="rnd?size={}" style="visibility:hidden">'.format(size)
+        new_obj = '<img src="/rnd/{}" style="visibility:hidden">'.format(size)
         add_to_html.append(new_obj)
     add_to_html = ''.join(add_to_html)
 
