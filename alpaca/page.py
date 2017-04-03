@@ -43,8 +43,12 @@ class Page:
         links = soup.find_all('link', href=True)
         for link in links:
             # CSS and images
-            if (getattr(link, 'rel', '') == 'stylesheet'
-                or getattr(link, 'type', '').startswith('image/')):
+            # :class:`bs4.element.Tag` re-implements :meth:`__getattr__` in an unusal way.
+            # The "attributes" we want are actually key/val pairs stored in a dict under the
+            # instance attribute `attrs`. :meth:`get` is a convenience method which passes
+            # it's arguments through to :meth:`self.attrs.get`.
+            if (link.get('rel', '')[0] == 'stylesheet'
+                or link.get('type', '').startswith('image/'))
                 path = link['href']
                 obj = self.new_object(path)
                 objects.append(obj)
