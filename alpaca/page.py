@@ -33,25 +33,22 @@ class Page:
         """
         soup = BeautifulSoup(html, 'html.parser')
         objects = []
-        # Images
+        # img tags
         links = soup.find_all('img', src=True)
         for img in links:
             path = img['src']
             obj = self.new_object(path)
             objects.append(obj)
-        links = soup.find_all('link')
+        # link tags
+        links = soup.find_all('link', href=True)
         for link in links:
-            if link['type'].startswith('image'):
-                path = img['href']
+            # CSS and images
+            if (getattr(link, rel, '') == 'stylesheet'
+                or getattr(link, type, '').startswith('image/')):
+                path = link['href']
                 obj = self.new_object(path)
                 objects.append(obj)
-        # CSS
-        links = soup.find_all('link', rel='stylesheet')
-        for css in links:
-            path = css['href']
-            obj = self.new_object(path)
-            objects.append(obj)
-        # JS
+        # script tags
         links = soup.find_all('script', src=True)
         for script in links:
             path = script['src']
