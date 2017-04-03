@@ -39,6 +39,12 @@ class Page:
             path = img['src']
             obj = self.new_object(path)
             objects.append(obj)
+        links = soup.find_all('link')
+        for link in links:
+            if link['type'].startswith('image'):
+                path = img['href']
+                obj = self.new_object(path)
+                objects.append(obj)
         # CSS
         links = soup.find_all('link', rel='stylesheet')
         for css in links:
