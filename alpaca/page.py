@@ -43,8 +43,8 @@ class Page:
         links = soup.find_all('link', href=True)
         for link in links:
             # CSS and images
-            if (getattr(link, rel, '') == 'stylesheet'
-                or getattr(link, type, '').startswith('image/')):
+            if (getattr(link, 'rel', '') == 'stylesheet'
+                or getattr(link, 'type', '').startswith('image/')):
                 path = link['href']
                 obj = self.new_object(path)
                 objects.append(obj)
