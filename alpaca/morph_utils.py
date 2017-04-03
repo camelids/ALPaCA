@@ -8,7 +8,11 @@ import random
 import string
 
 import page
-from file_utils import *
+
+class FilePaddingError(Exception):
+    def __init__(self, message):
+        MSG = "The size of the file '{}' is larger than the padding target size.".format(message)
+        super(Exception, self).__init__(MSG)
 
 def morph_html(html, target_size):
     """Morphs html text.

@@ -6,7 +6,6 @@ of web pages (e.g.: text, images).
 import os
 import page
 import numpy as np
-from file_utils import *
 from morph_utils import create_object, morph_html, morph_object
 
 MAX_FAILS = 20    # How many times we should sample a target page from a
