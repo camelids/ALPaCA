@@ -1,5 +1,12 @@
 # ALPaCA
 
+**Note** we're currently working on deploying ALPaCA as a (Rust) library,
+[libalpaca](https://github.com/camelids/libalpaca).
+If you're interested in the original Python code,
+please also have a look at the [secure drop branch](https://github.com/camelids/ALPaCA/tree/securedrop)
+on this repo.
+
+
 This is the original implementation of the ALPaCA WF defense
 proposed in ''Website Fingerprinting Defenses at the Application Layer''
 (Cherubin, Hayes, Juarez. PETS'17).
