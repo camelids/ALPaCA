@@ -279,3 +279,36 @@ def __pad_pdf(img, dst, target_size):
         Desired size.
     """
     raise NotImplementedError('Morphing PDF files')
+    
+def __pad_svg(fname, dst, target_size):
+    """Pad a SVG file.
+    
+    Adds a (XML) comment at the end of the SVG file, and
+    stores the result in a new file.
+    
+    Parameters
+    ----------
+    fname : str
+        Name of the SVG file
+    dst : str
+        Name of the destination file.
+    target : int
+        Size (in bytes) that the file should have.
+    """
+    size = file_size(fname)
+    if size == target_size:
+        copy_file(fname, dst)
+        return
+    # Padding size
+    comment_start = '<!--'
+    comment_end = '-->'
+    pad = target_size - size - len(comment_start) - len(comment_end)
+    if pad < 0:
+        raise FilePaddingError(fname)
+    with open(fname) as f:
+        text = f.read()
+    # Pad
+    rnd = random_chars(pad) 
+    text += '{}{}{}'.format(comment_start, rnd, comment_end)
+    with open(dst, 'w') as f:
+        f.write(text)
