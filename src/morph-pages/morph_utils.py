@@ -52,6 +52,8 @@ def morph_object(fname, dst, target_size):
         morph = __pad_pdf
     elif ext == 'css':
         morph = __pad_css
+    elif ext == 'svg':
+        morph = __pad_svg
     else:
         raise NotImplementedError('Morphing files with extension {}'.format(ext))
     
@@ -93,8 +95,15 @@ def random_bytes(n):
 def __pad_html(html, target_size):
     """Pads html text.
 
-    Adds a comment to the html page containing random
-    data, so that the page reaches the target size.
+    Adds a comment to the provided html text containing random
+    data, so that the corresponding page reaches the target size.
+    
+    Parameters
+    ----------
+    fname : string
+        HTML text.
+    target_size : int
+        Size (in bytes) that the text should have.
     """
     size = len(html)
     if size == target_size:
@@ -149,7 +158,6 @@ def __pad_css(fname, dst, target_size):
     text += '{}{}{}'.format(comment_start, rnd, comment_end)
     with open(dst, 'w') as f:
         f.write(text)
-
 
 def __pad_png(fname, dst, target_size):
     """Pad a PNG image.
@@ -279,3 +287,26 @@ def __pad_pdf(img, dst, target_size):
         Desired size.
     """
     raise NotImplementedError('Morphing PDF files')
+    
+def __pad_svg(fname, dst, target_size):
+    """Pad a SVG file.
+    
+    Adds a (XML) comment at the end of the SVG file, and
+    stores the result in a new file.
+    
+    Parameters
+    ----------
+    fname : str
+        Name of the SVG file
+    dst : str
+        Name of the destination file.
+    target : int
+        Size (in bytes) that the file should have.
+    """
+   
+    with open(fname, 'rb') as f:
+        text = f.read()
+        text = __pad_html(text, target_size)
+    
+    with open(dst, 'wb') as f:
+        f.write(text)

@@ -40,6 +40,8 @@ def morph_page_distribution(fname, page_sampler, outdir):
     # small), notify and try again.
     try:
         morph_page(original, target_html_size, target_sizes, outdir)
+    except NotImplementedError as e:
+        raise e
     except:
         print "Couldn't morph {} with {}".format(sizes, target_sizes)
         morph_page_distribution(fname, page_sampler, outdir)
