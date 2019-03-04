@@ -52,6 +52,8 @@ def morph_object(fname, dst, target_size):
         morph = __pad_pdf
     elif ext == 'css':
         morph = __pad_css
+    elif ext == 'svg':
+        morph = __pad_svg
     else:
         raise NotImplementedError('Morphing files with extension {}'.format(ext))
     
@@ -295,20 +297,14 @@ def __pad_svg(fname, dst, target_size):
     target : int
         Size (in bytes) that the file should have.
     """
-    size = file_size(fname)
-    if size == target_size:
-        copy_file(fname, dst)
-        return
-    # Padding size
-    comment_start = '<!--'
-    comment_end = '-->'
-    pad = target_size - size - len(comment_start) - len(comment_end)
-    if pad < 0:
-        raise FilePaddingError(fname)
-    with open(fname) as f:
+   
+    with open(fname, 'rb') as f:
         text = f.read()
-    # Pad
-    rnd = random_chars(pad) 
-    text += '{}{}{}'.format(comment_start, rnd, comment_end)
-    with open(dst, 'w') as f:
+        text = __pad_html(text, target_size)
+    
+    with open(dst, 'wb') as f:
         f.write(text)
+        
+    
+    
+    
