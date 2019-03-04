@@ -95,8 +95,15 @@ def random_bytes(n):
 def __pad_html(html, target_size):
     """Pads html text.
 
-    Adds a comment to the html page containing random
-    data, so that the page reaches the target size.
+    Adds a comment to the provided html text containing random
+    data, so that the corresponding page reaches the target size.
+    
+    Parameters
+    ----------
+    fname : string
+        HTML text.
+    target_size : int
+        Size (in bytes) that the text should have.
     """
     size = len(html)
     if size == target_size:
