@@ -152,7 +152,6 @@ def __pad_css(fname, dst, target_size):
     with open(dst, 'w') as f:
         f.write(text)
 
-
 def __pad_png(fname, dst, target_size):
     """Pad a PNG image.
 
@@ -304,7 +303,3 @@ def __pad_svg(fname, dst, target_size):
     
     with open(dst, 'wb') as f:
         f.write(text)
-        
-    
-    
-    
